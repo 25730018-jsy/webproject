@@ -15,9 +15,9 @@
     <header class="header">
       <h1 class="logo">Palette</h1>
       <nav class="nav">
-        <button type="button" class="nav-btn active" id="btnNavHome">홈</button>
-        <button type="button" class="nav-btn" id="btnNavList">조합 목록</button>
-        <button type="button" class="nav-btn" id="btnNavPouch">마이 파우치</button>
+        <button type="button" class="nav-btn active" id="btnNavHome" onclick="switchTab('home')">홈</button>
+        <button type="button" class="nav-btn" id="btnNavList" onclick="switchTab('list')">조합 목록</button>
+        <button type="button" class="nav-btn" id="btnNavPouch" onclick="switchTab('pouch')">마이 파우치</button>
       </nav>
     </header>
 
@@ -33,20 +33,20 @@
 
         <!-- 1단계: 4계절 선택 -->
         <div class="season-group" id="seasonGroup">
-          <button type="button" class="season-btn active" data-season="봄">봄</button>
-          <button type="button" class="season-btn" data-season="여름">여름</button>
-          <button type="button" class="season-btn" data-season="가을">가을</button>
-          <button type="button" class="season-btn" data-season="겨울">겨울</button>
+          <button type="button" class="season-btn active" onclick="selectSeason('봄', this)">봄</button>
+          <button type="button" class="season-btn" onclick="selectSeason('여름', this)">여름</button>
+          <button type="button" class="season-btn" onclick="selectSeason('가을', this)">가을</button>
+          <button type="button" class="season-btn" onclick="selectSeason('겨울', this)">겨울</button>
         </div>
 
         <!-- 2단계: 세부 3톤 선택 -->
         <div class="subtone-title">세부 톤 선택</div>
         <div class="subtone-group" id="subtoneGroup">
-          <!-- JS에서 계절 선택에 따라 세부 톤 버튼이 들어갑니다 -->
+          <!-- JS에서 계절 선택에 따라 동적으로 들어갑니다 -->
         </div>
       </section>
 
-      <!-- 준비중 안내 영역 (조합 목록 / 마이 파우치 클릭 시) -->
+      <!-- 준비중 안내 영역 (조합 목록 / 마이 파우치 전용) -->
       <section class="placeholder-section hidden" id="placeholderSection">
         <p>준비 중인 기능입니다.</p>
       </section>
@@ -55,15 +55,15 @@
 
     <!-- 하단 고정 네비게이션 -->
     <nav class="bottom-nav">
-      <button type="button" class="bottom-nav-btn active" id="bNavHome">
+      <button type="button" class="bottom-nav-btn active" id="bNavHome" onclick="switchTab('home')">
         <span class="b-icon">🏠</span>
         <span>홈</span>
       </button>
-      <button type="button" class="bottom-nav-btn" id="bNavList">
+      <button type="button" class="bottom-nav-btn" id="bNavList" onclick="switchTab('list')">
         <span class="b-icon">💄</span>
         <span>조합 목록</span>
       </button>
-      <button type="button" class="bottom-nav-btn" id="bNavPouch">
+      <button type="button" class="bottom-nav-btn" id="bNavPouch" onclick="switchTab('pouch')">
         <span class="b-icon">👝</span>
         <span>마이 파우치</span>
       </button>
