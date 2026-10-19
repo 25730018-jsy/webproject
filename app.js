@@ -89,8 +89,8 @@ function initEvents() {
   document.querySelectorAll("#toneFilterGroup .tag-btn").forEach((btn) => {
     btn.onclick = (e) => {
       document.querySelectorAll("#toneFilterGroup .tag-btn").forEach((b) => b.classList.remove("active"));
-      e.target.classList.add("active");
-      selectedTone = e.target.getAttribute("data-filter-val");
+      e.currentTarget.classList.add("active");
+      selectedTone = e.currentTarget.getAttribute("data-filter-val");
       render();
     };
   });
@@ -98,13 +98,13 @@ function initEvents() {
   // 무드 필터
   document.querySelectorAll("#moodFilterGroup .tag-btn").forEach((btn) => {
     btn.onclick = (e) => {
-      const val = e.target.getAttribute("data-filter-val");
+      const val = e.currentTarget.getAttribute("data-filter-val");
       if (selectedMood === val) {
         selectedMood = null;
-        e.target.classList.remove("active");
+        e.currentTarget.classList.remove("active");
       } else {
         document.querySelectorAll("#moodFilterGroup .tag-btn").forEach((b) => b.classList.remove("active"));
-        e.target.classList.add("active");
+        e.currentTarget.classList.add("active");
         selectedMood = val;
       }
       render();
