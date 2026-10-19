@@ -33,6 +33,7 @@ body {
   margin-bottom: 12px;
   letter-spacing: -0.5px;
   display: inline-block;
+  user-select: none;
 }
 
 .nav {
