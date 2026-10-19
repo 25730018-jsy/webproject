@@ -6,67 +6,86 @@ var toneMap = {
   "겨울": ["겨울 브라이트", "겨울 트루", "겨울 딥"]
 };
 
-// 페이지 로드 완료 시 초기화 및 이벤트 연결
-document.addEventListener("DOMContentLoaded", function () {
-  initEvents();
-  renderSubtones("봄"); // 초기 실행 시 '봄' 세부 톤 표시
-});
+// 페이지 로드 시 및 안전장치
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  initApp();
+}
 
-function initEvents() {
-  // 계절 버튼 (봄, 여름, 가을, 겨울) 클릭 이벤트 등록
-  var seasonBtns = document.querySelectorAll("#seasonGroup .season-btn");
+function initApp() {
+  bindSeasonEvents();
+  bindNavEvents();
+  renderSubtones("봄"); // 초기 실행 시 '봄' 세부 톤 출력
+}
+
+// 계절 버튼 (봄, 여름, 가을, 겨울) 클릭 이벤트
+function bindSeasonEvents() {
+  var seasonBtns = document.querySelectorAll(".season-btn, [data-season]");
+  
   seasonBtns.forEach(function (btn) {
-    btn.addEventListener("click", function (e) {
-      seasonBtns.forEach(function (b) { b.classList.remove("active"); });
-      e.currentTarget.classList.add("active");
+    btn.onclick = function (e) {
+      seasonBtns.forEach(function (b) {
+        b.classList.remove("active");
+      });
+      btn.classList.add("active");
 
-      var season = e.currentTarget.getAttribute("data-season") || e.currentTarget.innerText.trim();
-      renderSubtones(season);
-    });
+      // 버튼의 data-season 값 또는 내부 텍스트("봄", "여름" 등) 추출
+      var seasonText = btn.getAttribute("data-season") || btn.innerText.trim();
+      renderSubtones(seasonText);
+    };
   });
-
-  // 상단/하단 탭 버튼 클릭 이벤트 등록
-  bindTabEvent("btnNavHome", "home");
-  bindTabEvent("btnNavList", "list");
-  bindTabEvent("btnNavPouch", "pouch");
-  bindTabEvent("bNavHome", "home");
-  bindTabEvent("bNavList", "list");
-  bindTabEvent("bNavPouch", "pouch");
 }
 
-// 탭 이벤트 바인딩 헬퍼
-function bindTabEvent(id, tabName) {
-  var el = document.getElementById(id);
-  if (el) {
-    el.addEventListener("click", function () {
-      switchTab(tabName);
-    });
-  }
-}
-
-// 계절에 맞는 세부 3톤 버튼 동적 생성
+// 계절에 해당하는 세부 3톤 버튼 동적 생성
 function renderSubtones(season) {
   var subtoneGroup = document.getElementById("subtoneGroup");
   if (!subtoneGroup) return;
 
-  var tones = toneMap[season] || [];
-  subtoneGroup.innerHTML = tones
-    .map(function (tone, idx) {
-      return '<button type="button" class="subtone-btn ' + (idx === 0 ? "active" : "") + '">' + tone + '</button>';
-    })
-    .join("");
+  var tones = toneMap[season] || toneMap["봄"];
+  var html = "";
 
-  // 생성된 세부 톤 버튼들에 클릭 이벤트 연결
+  for (var i = 0; i < tones.length; i++) {
+    var activeClass = (i === 0) ? "active" : "";
+    html += '<button type="button" class="subtone-btn ' + activeClass + '">' + tones[i] + '</button>';
+  }
+
+  subtoneGroup.innerHTML = html;
+
+  // 생성된 세부 톤 버튼 클릭 이벤트
   var subtoneBtns = subtoneGroup.querySelectorAll(".subtone-btn");
   subtoneBtns.forEach(function (btn) {
-    btn.addEventListener("click", function (e) {
-      subtoneBtns.forEach(function (b) { b.classList.remove("active"); });
-      e.currentTarget.classList.add("active");
-    });
+    btn.onclick = function () {
+      subtoneBtns.forEach(function (b) {
+        b.classList.remove("active");
+      });
+      btn.classList.add("active");
+    };
   });
 }
 
-// 탭 전환 처리
+// 상단/하단 탭 전환 이벤트
+function bindNavEvents() {
+  var tabPairs = [
+    { id: "btnNavHome", tab: "home" },
+    { id: "btnNavList", tab: "list" },
+    { id: "btnNavPouch", tab: "pouch" },
+    { id: "bNavHome", tab: "home" },
+    { id: "bNavList", tab: "list" },
+    { id: "bNavPouch", tab: "pouch" }
+  ];
+
+  tabPairs.forEach(function (item) {
+    var el = document.getElementById(item.id);
+    if (el) {
+      el.onclick = function () {
+        switchTab(item.tab);
+      };
+    }
+  });
+}
+
+// 탭 스위칭 logic
 function switchTab(tab) {
   var updateActive = function (id, targetTab) {
     var el = document.getElementById(id);
