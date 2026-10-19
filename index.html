@@ -40,13 +40,14 @@
         </div>
 
         <!-- 2단계: 세부 3톤 선택 -->
+        <div class="subtone-title">세부 톤 선택</div>
         <div class="subtone-group" id="subtoneGroup">
           <!-- JS에서 계절 선택에 따라 동적으로 생성됩니다 -->
         </div>
       </section>
 
-      <!-- 결과 섹션 -->
-      <section class="result-section">
+      <!-- 결과 섹션 (조합 목록 / 마이 파우치 전용) -->
+      <section class="result-section" id="resultSection">
         <div class="result-header">
           <span class="result-count">조합 결과 <strong id="resultCountNum">0</strong>건</span>
           <select id="sortSelect">
@@ -59,9 +60,9 @@
         <div class="card-list" id="cardList"></div>
 
         <div class="empty-state hidden" id="emptyState">
-          <p class="empty-title">선택하신 톤에 맞는 세트가 없습니다.</p>
-          <p class="empty-sub">다른 세부 톤을 선택하거나 전체 목록을 둘러보세요.</p>
-          <button type="button" id="btnResetFilter">전체 톤 보기</button>
+          <p class="empty-title">선택하신 조건에 맞는 세트가 없습니다.</p>
+          <p class="empty-sub">다른 필터를 해제하고 다시 확인해 보세요.</p>
+          <button type="button" id="btnResetFilter">전체 목록 보기</button>
         </div>
       </section>
 
@@ -93,9 +94,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
-</body>
-</html>
   <script src="app.js"></script>
 </body>
 </html>
