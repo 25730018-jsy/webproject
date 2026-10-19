@@ -1,104 +1,84 @@
 // 12톤 매핑 정보
 const toneMap = {
-  봄: ["봄 라이트", "봄 트루", "봄 브라이트"],
-  여름: ["여름 라이트", "여름 트루", "여름 소프트"],
-  가을: ["가을 소프트", "가을 트루", "가을 딥"],
-  겨울: ["겨울 브라이트", "겨울 트루", "겨울 딥"]
+  "봄": ["봄 라이트", "봄 트루", "봄 브라이트"],
+  "여름": ["여름 라이트", "여름 트루", "여름 소프트"],
+  "가을": ["가을 소프트", "가을 트루", "가을 딥"],
+  "겨울": ["겨울 브라이트", "겨울 트루", "겨울 딥"]
 };
 
-let currentTab = "home";
-let selectedSeason = "봄";
-let selectedSubtone = "봄 라이트";
+let currentSeason = "봄";
+let currentSubtone = "봄 라이트";
 
-document.addEventListener("DOMContentLoaded", () => {
-  initApp();
-});
-
-function initApp() {
-  bindNavEvents();
-  bindSeasonEvents();
+// 페이지 켜지면 '봄' 세부톤 목록 표시
+window.onload = function () {
   renderSubtones("봄");
-  switchTab("home");
-}
+};
 
-// 탭 버튼 클릭 연결
-function bindNavEvents() {
-  const navIds = [
-    { home: "btnNavHome", list: "btnNavList", pouch: "btnNavPouch" },
-    { home: "bNavHome", list: "bNavList", pouch: "bNavPouch" }
-  ];
+// 계절 선택 버튼 클릭 함수
+function selectSeason(season, btnElement) {
+  currentSeason = season;
 
-  navIds.forEach((group) => {
-    document.getElementById(group.home)?.addEventListener("click", () => switchTab("home"));
-    document.getElementById(group.list)?.addEventListener("click", () => switchTab("list"));
-    document.getElementById(group.pouch)?.addEventListener("click", () => switchTab("pouch"));
-  });
-}
-
-// 계절 버튼 클릭 이벤트 연동 (봄, 여름, 가을, 겨울)
-function bindSeasonEvents() {
+  // 계절 버튼 활성화 상태 변경
   const seasonBtns = document.querySelectorAll("#seasonGroup .season-btn");
+  seasonBtns.forEach((b) => b.classList.remove("active"));
+  if (btnElement) btnElement.classList.add("active");
 
-  seasonBtns.forEach((btn) => {
-    btn.onclick = (e) => {
-      seasonBtns.forEach((b) => b.classList.remove("active"));
-      e.currentTarget.classList.add("active");
-
-      selectedSeason = e.currentTarget.getAttribute("data-season");
-      renderSubtones(selectedSeason);
-    };
-  });
+  // 해당 계절의 세부 톤 화면 출력
+  renderSubtones(season);
 }
 
-// 선택된 계절의 세부 3톤 버튼 동적 출력
+// 세부 톤 생성 함수
 function renderSubtones(season) {
   const subtoneGroup = document.getElementById("subtoneGroup");
   if (!subtoneGroup) return;
 
   const subTones = toneMap[season] || [];
-  selectedSubtone = subTones[0] || "";
+  currentSubtone = subTones[0] || "";
 
   subtoneGroup.innerHTML = subTones
     .map(
       (tone, idx) => `
-      <button type="button" class="subtone-btn ${idx === 0 ? "active" : ""}" data-tone="${tone}">
+      <button type="button" class="subtone-btn ${idx === 0 ? "active" : ""}" onclick="selectSubtone('${tone}', this)">
         ${tone}
       </button>
     `
     )
     .join("");
-
-  // 세부 톤 버튼 클릭 이벤트
-  const subtoneBtns = subtoneGroup.querySelectorAll(".subtone-btn");
-  subtoneBtns.forEach((btn) => {
-    btn.onclick = (e) => {
-      subtoneBtns.forEach((b) => b.classList.remove("active"));
-      e.currentTarget.classList.add("active");
-      selectedSubtone = e.currentTarget.getAttribute("data-tone");
-    };
-  });
 }
 
-// 탭 스위칭 logic
+// 세부 톤 선택 클릭 함수
+function selectSubtone(tone, btnElement) {
+  currentSubtone = tone;
+
+  const subtoneBtns = document.querySelectorAll("#subtoneGroup .subtone-btn");
+  subtoneBtns.forEach((b) => b.classList.remove("active"));
+  if (btnElement) btnElement.classList.add("active");
+}
+
+// 탭 전환 함수
 function switchTab(tab) {
-  currentTab = tab;
+  const btnHome = document.getElementById("btnNavHome");
+  const btnList = document.getElementById("btnNavList");
+  const btnPouch = document.getElementById("btnNavPouch");
 
-  const updateActive = (id, targetTab) => {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle("active", tab === targetTab);
-  };
+  const bHome = document.getElementById("bNavHome");
+  const bList = document.getElementById("bNavList");
+  const bPouch = document.getElementById("bNavPouch");
 
-  updateActive("btnNavHome", "home");
-  updateActive("btnNavList", "list");
-  updateActive("btnNavPouch", "pouch");
-  updateActive("bNavHome", "home");
-  updateActive("bNavList", "list");
-  updateActive("bNavPouch", "pouch");
+  // 버튼 active 관리
+  if (btnHome) btnHome.classList.toggle("active", tab === "home");
+  if (btnList) btnList.classList.toggle("active", tab === "list");
+  if (btnPouch) btnPouch.classList.toggle("active", tab === "pouch");
 
+  if (bHome) bHome.classList.toggle("active", tab === "home");
+  if (bList) bList.classList.toggle("active", tab === "list");
+  if (bPouch) bPouch.classList.toggle("active", tab === "pouch");
+
+  // 섹션 표시 숨김 관리
   const pcSection = document.getElementById("personalColorSection");
   const placeholderSection = document.getElementById("placeholderSection");
 
-  if (currentTab === "home") {
+  if (tab === "home") {
     if (pcSection) pcSection.classList.remove("hidden");
     if (placeholderSection) placeholderSection.classList.add("hidden");
   } else {
