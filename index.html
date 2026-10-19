@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Palette - 스타일·무드별 메이크업 조합 & 뷰티 템 탐색 서비스</title>
+  <title>Palette - 퍼스널 컬러 메이크업 조합 탐색</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,41 +24,31 @@
     <!-- Main Content -->
     <main class="content">
 
-      <!-- 검색 -->
-      <section class="search-section">
-        <div class="search-bar">
-          <input type="text" id="searchInput" placeholder="브랜드명 또는 세트 키워드 검색">
-          <button type="button" id="btnSearch">검색</button>
+      <!-- 퍼스널컬러 선택 섹션 (홈 탭 전용) -->
+      <section class="personal-color-section" id="personalColorSection">
+        <div class="pc-header">
+          <h2>퍼스널컬러 진단 · 12톤 팔레트</h2>
+          <p>나에게 딱 맞는 톤을 선택하고 조합을 확인하세요</p>
+        </div>
+
+        <!-- 1단계: 4계절 선택 -->
+        <div class="season-group" id="seasonGroup">
+          <button type="button" class="season-btn active" data-season="봄">봄</button>
+          <button type="button" class="season-btn" data-season="여름">여름</button>
+          <button type="button" class="season-btn" data-season="가을">가을</button>
+          <button type="button" class="season-btn" data-season="겨울">겨울</button>
+        </div>
+
+        <!-- 2단계: 세부 3톤 선택 -->
+        <div class="subtone-group" id="subtoneGroup">
+          <!-- JS에서 계절 선택에 따라 동적으로 생성됩니다 -->
         </div>
       </section>
 
-      <!-- 필터 -->
-      <section class="filter-section">
-        <div class="filter-group">
-          <h3>사계절 세부 톤</h3>
-          <div class="tag-group" id="toneFilterGroup">
-            <button type="button" class="tag-btn active" data-filter-type="tone" data-filter-val="all">전체</button>
-            <button type="button" class="tag-btn" data-filter-type="tone" data-filter-val="봄라이트">봄라이트</button>
-            <button type="button" class="tag-btn" data-filter-type="tone" data-filter-val="여름뮤트">여름뮤트</button>
-            <button type="button" class="tag-btn" data-filter-type="tone" data-filter-val="가을딥">가을딥</button>
-            <button type="button" class="tag-btn" data-filter-type="tone" data-filter-val="겨울스트롱">겨울스트롱</button>
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <h3>스타일 무드</h3>
-          <div class="tag-group" id="moodFilterGroup">
-            <button type="button" class="tag-btn" data-filter-type="mood" data-filter-val="#음영메이크업">#음영메이크업</button>
-            <button type="button" class="tag-btn" data-filter-type="mood" data-filter-val="#맑은속광">#맑은속광</button>
-            <button type="button" class="tag-btn" data-filter-type="mood" data-filter-val="#글로우">#글로우</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- 결과 -->
+      <!-- 결과 섹션 -->
       <section class="result-section">
         <div class="result-header">
-          <span class="result-count">검색 결과 <strong id="resultCountNum">3</strong>건</span>
+          <span class="result-count">조합 결과 <strong id="resultCountNum">0</strong>건</span>
           <select id="sortSelect">
             <option value="popular">인기순</option>
             <option value="latest">최신순</option>
@@ -69,9 +59,9 @@
         <div class="card-list" id="cardList"></div>
 
         <div class="empty-state hidden" id="emptyState">
-          <p class="empty-title">선택하신 조건에 맞는 세트가 없습니다.</p>
-          <p class="empty-sub">다른 세부 톤이나 필터를 해제하고 다시 검색해 보세요.</p>
-          <button type="button" id="btnResetFilter">필터 전체 초기화</button>
+          <p class="empty-title">선택하신 톤에 맞는 세트가 없습니다.</p>
+          <p class="empty-sub">다른 세부 톤을 선택하거나 전체 목록을 둘러보세요.</p>
+          <button type="button" id="btnResetFilter">전체 톤 보기</button>
         </div>
       </section>
 
@@ -103,6 +93,9 @@
     </div>
   </div>
 
+  <script src="app.js"></script>
+</body>
+</html>
   <script src="app.js"></script>
 </body>
 </html>
