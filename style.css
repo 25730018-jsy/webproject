@@ -82,12 +82,12 @@ body {
 .season-group {
   display: flex;
   gap: 6px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .season-btn {
   flex: 1;
-  padding: 10px 0;
+  padding: 12px 0;
   border: 1px solid #dddddd;
   background-color: #ffffff;
   font-size: 14px;
@@ -103,28 +103,51 @@ body {
   border-color: #1a1a1a;
 }
 
-/* 세부 3톤 버튼 서브 그룹 */
+/* 세부 톤 타이틀 */
+.subtone-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+/* 세부 3톤 버튼 그룹 */
 .subtone-group {
   display: flex;
-  gap: 6px;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .subtone-btn {
-  flex: 1;
-  padding: 8px 0;
+  width: 100%;
+  padding: 12px 14px;
   border: 1px solid #e0e0e0;
   background-color: #ffffff;
-  font-size: 12px;
+  font-size: 13px;
+  text-align: left;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
   transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.subtone-btn::after {
+  content: '→';
+  font-size: 12px;
+  color: #aaa;
 }
 
 .subtone-btn.active {
-  background-color: #333333;
+  background-color: #1a1a1a;
   color: #ffffff;
-  border-color: #333333;
+  border-color: #1a1a1a;
   font-weight: bold;
+}
+
+.subtone-btn.active::after {
+  color: #ffffff;
 }
 
 /* Result Section */
