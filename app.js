@@ -1,289 +1,265 @@
-// 1. 샘플 메이크업 세트 데이터 (JSON 구조)
-const mockData = [
+// Palette 메이크업 조합 데이터
+const mockProducts = [
   {
     id: 1,
     title: "A브랜드 여름뮤트 모브 음영 세트",
-    seasonCategory: "여름 쿨",
-    detailTone: "여름뮤트",
-    styleMood: "음영메이크업",
+    tone: "여름뮤트",
+    mood: "#음영메이크업",
     price: 42000,
-    priceFormatted: "42,000원",
-    lip: "XX 모브 틴트 (02 쿨로즈)",
-    blusher: "YY 더스티 파우더 (01 로지)",
+    lip: "XX 모브 틴트",
+    blusher: "YY 더스티 섀도우",
     shadow: "ZZ 뮤트 4색 팔레트",
-    tags: "#여름뮤트 #음영메이크업 #차분한로즈"
+    popular: 3,
+    date: "2024-03-01",
+    detailImg: "여름뮤트",
+    desc: "쿨톤 여름뮤트 착붙 조합! 차분하고 감성적인 모브 음영 메이크업 연출 가능."
   },
   {
     id: 2,
     title: "B브랜드 봄라이트 피치 속광 세트",
-    seasonCategory: "봄 웜",
-    detailTone: "봄라이트",
-    styleMood: "맑은속광",
+    tone: "봄라이트",
+    mood: "#맑은속광",
     price: 38000,
-    priceFormatted: "38,000원",
-    lip: "AA 글로우 립 (01 코랄)",
-    blusher: "BB 피치 블러셔 (03 피치)",
-    shadow: "CC 맑은 섀도우 (02 봄햇살)",
-    tags: "#봄라이트 #맑은속광 #데일릴룩"
+    lip: "AA 글로우 립",
+    blusher: "BB 피치 파우더",
+    shadow: "CC 코랄 팔레트",
+    popular: 1,
+    date: "2024-03-05",
+    detailImg: "봄라이트",
+    desc: "봄라이트 전용 화사한 피치 톤 조합으로 투명하고 맑은 속광 메이크업을 완벽 완성합니다."
   },
   {
     id: 3,
     title: "C브랜드 가을딥 글로우 음영 세트",
-    seasonCategory: "가을 웜",
-    detailTone: "가을딥",
-    styleMood: "글로우",
+    tone: "가을딥",
+    mood: "#글로우",
     price: 45000,
-    priceFormatted: "45,000원",
-    lip: "DD 딥벨벳 립 (05 가을브라운)",
-    blusher: "EE 웜로즈 블러셔",
-    shadow: "FF 딥브라운 8색 팔레트",
-    tags: "#가을딥 #글로우 #음영메이크업"
+    lip: "DD 브릭 틴트",
+    blusher: "EE 딥 로즈",
+    shadow: "FF 글리터 팔레트",
+    popular: 2,
+    date: "2024-03-02",
+    detailImg: "가을딥",
+    desc: "가을딥 톤을 위한 딥한 브릭 컬러와 화려한 글로우 포인트가 살아있는 세트입니다."
   }
 ];
 
-// LocalStorage 저장용 파우치 ID 목록
-let savedPouchIds = JSON.parse(localStorage.getItem('savedPouchIds')) || [];
+// 상태 관리
+let currentTab = "home"; // home, list, pouch
+let selectedTone = "all";
+let selectedMood = null;
+let searchQuery = "";
+let currentSort = "popular";
+let pouchList = JSON.parse(localStorage.getItem("palettePouch")) || [];
 
-// 현재 선택된 필터 상태
-let currentTab = 'list'; // 'list' 또는 'pouch'
-let selectedTone = 'all';
-let selectedMood = 'all';
-let searchKeyword = '';
-let currentSelectedCardId = null;
+// DOM 요소
+document.addEventListener("DOMContentLoaded", () => {
+  initEvents();
+  render();
+});
 
-// DOM 요소 
-const DOM = {
-  // 네비게이션
-  btnNavList: document.getElementById('btnNavList'),
-  btnNavPouch: document.getElementById('btnNavPouch'),
-  
-  // 검색 & 필터
-  searchInput: document.getElementById('searchInput'),
-  searchBtn: document.getElementById('searchBtn'),
-  toneChipList: document.getElementById('toneChipList'),
-  moodChipList: document.getElementById('moodChipList'),
-  sortSelect: document.getElementById('sortSelect'),
-  resultCount: document.getElementById('resultCount'),
-  
-  // 메인 영역
-  cardList: document.getElementById('cardList'),
-  emptyState: document.getElementById('emptyState'),
-  resetFilterBtn: document.getElementById('resetFilterBtn'),
-  
-  // 상세 모달
-  detailModal: document.getElementById('detailModal'),
-  modalCloseBtn: document.getElementById('modalCloseBtn'),
-  modalTone: document.getElementById('modalTone'),
-  modalTitle: document.getElementById('modalTitle'),
-  modalTags: document.getElementById('modalTags'),
-  modalLip: document.getElementById('modalLip'),
-  modalBlusher: document.getElementById('modalBlusher'),
-  modalShadow: document.getElementById('modalShadow'),
-  modalPrice: document.getElementById('modalPrice'),
-  savePouchBtn: document.getElementById('savePouchBtn')
-};
+// 이벤트 리스너 등록
+function initEvents() {
+  // 상단 네비게이션 탭 버튼
+  document.getElementById("btnNavHome").addEventListener("click", () => switchTab("home"));
+  document.getElementById("btnNavList").addEventListener("click", () => switchTab("list"));
+  document.getElementById("btnNavPouch").addEventListener("click", () => switchTab("pouch"));
 
-// -------------------------------------------------------------
-// 화면 카드 목록 렌더링 함수
-// -------------------------------------------------------------
-function renderCardList() {
-  let filteredData = mockData;
+  // 하단 고정 네비게이션 탭 버튼
+  document.getElementById("bNavHome").addEventListener("click", () => switchTab("home"));
+  document.getElementById("bNavList").addEventListener("click", () => switchTab("list"));
+  document.getElementById("bNavPouch").addEventListener("click", () => switchTab("pouch"));
 
-  // 1) 탭 필터링 (마이 파우치 탭인 경우 저장된 것만)
-  if (currentTab === 'pouch') {
-    filteredData = filteredData.filter(item => savedPouchIds.includes(item.id));
+  // 검색
+  document.getElementById("btnSearch").addEventListener("click", handleSearch);
+  document.getElementById("searchInput").addEventListener("keyup", (e) => {
+    if (e.key === "Enter") handleSearch();
+  });
+
+  // 톤 필터
+  const toneBtns = document.querySelectorAll("#toneFilterGroup .tag-btn");
+  toneBtns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      toneBtns.forEach((b) => b.classList.remove("active"));
+      e.target.classList.add("active");
+      selectedTone = e.target.getAttribute("data-filter-val");
+      render();
+    });
+  });
+
+  // 무드 필터 (토글 방식)
+  const moodBtns = document.querySelectorAll("#moodFilterGroup .tag-btn");
+  moodBtns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const val = e.target.getAttribute("data-filter-val");
+      if (selectedMood === val) {
+        selectedMood = null;
+        e.target.classList.remove("active");
+      } else {
+        moodBtns.forEach((b) => b.classList.remove("active"));
+        e.target.classList.add("active");
+        selectedMood = val;
+      }
+      render();
+    });
+  });
+
+  // 정렬
+  document.getElementById("sortSelect").addEventListener("change", (e) => {
+    currentSort = e.target.value;
+    render();
+  });
+
+  // 필터 초기화
+  document.getElementById("btnResetFilter").addEventListener("click", resetFilters);
+
+  // 모달 닫기
+  document.getElementById("btnCloseModal").addEventListener("click", closeModal);
+  document.getElementById("detailModal").addEventListener("click", (e) => {
+    if (e.target.id === "detailModal") closeModal();
+  });
+}
+
+// 탭 전환
+function switchTab(tab) {
+  currentTab = tab;
+
+  // 상단 및 하단 버튼 활성화 상태 변경
+  const topBtns = { home: "btnNavHome", list: "btnNavList", pouch: "btnNavPouch" };
+  const bottomBtns = { home: "bNavHome", list: "bNavList", pouch: "bNavPouch" };
+
+  ["home", "list", "pouch"].forEach((t) => {
+    document.getElementById(topBtns[t]).classList.toggle("active", t === tab);
+    document.getElementById(bottomBtns[t]).classList.toggle("active", t === tab);
+  });
+
+  render();
+}
+
+// 검색 처리
+function handleSearch() {
+  searchQuery = document.getElementById("searchInput").value.trim();
+  render();
+}
+
+// 필터 초기화
+function resetFilters() {
+  selectedTone = "all";
+  selectedMood = null;
+  searchQuery = "";
+  document.getElementById("searchInput").value = "";
+
+  // UI 리셋
+  const toneBtns = document.querySelectorAll("#toneFilterGroup .tag-btn");
+  toneBtns.forEach((b) => {
+    b.classList.toggle("active", b.getAttribute("data-filter-val") === "all");
+  });
+
+  const moodBtns = document.querySelectorAll("#moodFilterGroup .tag-btn");
+  moodBtns.forEach((b) => b.classList.remove("active"));
+
+  render();
+}
+
+// 필터링 및 정렬 데이터 가져오기
+function getFilteredData() {
+  let list = [...mockProducts];
+
+  // 마이파우치 탭일 때
+  if (currentTab === "pouch") {
+    list = list.filter((item) => pouchList.includes(item.id));
   }
 
-  // 2) 톤 필터링 (봄라이트, 여름뮤트 등)
-  if (selectedTone !== 'all') {
-    filteredData = filteredData.filter(item => item.detailTone === selectedTone);
+  // 톤 필터
+  if (selectedTone !== "all") {
+    list = list.filter((item) => item.tone === selectedTone);
   }
 
-  // 3) 무드 필터링
-  if (selectedMood !== 'all') {
-    filteredData = filteredData.filter(item => item.styleMood === selectedMood);
+  // 무드 필터
+  if (selectedMood) {
+    list = list.filter((item) => item.mood === selectedMood);
   }
 
-  // 4) 검색어 필터링
-  if (searchKeyword.trim() !== '') {
-    filteredData = filteredData.filter(item => 
-      item.title.includes(searchKeyword) || item.tags.includes(searchKeyword)
+  // 검색어 필터
+  if (searchQuery) {
+    list = list.filter(
+      (item) =>
+        item.title.includes(searchQuery) ||
+        item.tone.includes(searchQuery) ||
+        item.lip.includes(searchQuery) ||
+        item.blusher.includes(searchQuery) ||
+        item.shadow.includes(searchQuery)
     );
   }
 
-  // 결과 건수 업데이트
-  DOM.resultCount.textContent = filteredData.length;
+  // 정렬
+  if (currentSort === "popular") {
+    list.sort((a, b) => a.popular - b.popular);
+  } else if (currentSort === "latest") {
+    list.sort((a, b) => new Date(b.date) - new Date(a.date));
+  } else if (currentSort === "priceLow") {
+    list.sort((a, b) => a.price - b.price);
+  }
 
-  // 결과가 0건이면 결과 없음 영역 표시
-  if (filteredData.length === 0) {
-    DOM.cardList.classList.add('is-hidden');
-    DOM.emptyState.classList.remove('is-hidden');
+  return list;
+}
+
+// 화면 렌더링
+function render() {
+  const cardListEl = document.getElementById("cardList");
+  const emptyStateEl = document.getElementById("emptyState");
+  const resultCountNum = document.getElementById("resultCountNum");
+
+  const data = getFilteredData();
+  resultCountNum.textContent = data.length;
+
+  if (data.length === 0) {
+    cardListEl.innerHTML = "";
+    emptyStateEl.classList.remove("hidden");
     return;
   }
 
-  DOM.emptyState.classList.add('is-hidden');
-  DOM.cardList.classList.remove('is-hidden');
+  emptyStateEl.classList.add("hidden");
 
-  // 카드 HTML 생성
-  DOM.cardList.innerHTML = filteredData.map(item => {
-    const isSaved = savedPouchIds.includes(item.id);
-    return `
-      <article class="combo-card" data-id="${item.id}">
-        <div class="card-thumb">
-          <span class="tone-badge">${item.detailTone}</span>
-        </div>
+  cardListEl.innerHTML = data
+    .map((item) => {
+      const isPouch = pouchList.includes(item.id);
+      return `
+      <div class="card">
+        <div class="card-img-placeholder">${item.tone}</div>
         <div class="card-info">
-          <h2 class="card-title">${item.title}</h2>
-          <div class="combo-badges">
-            <span class="badge">립: ${item.lip.split(' ')[0]}</span>
-            <span class="badge">블러셔: ${item.blusher.split(' ')[0]}</span>
-            <span class="badge">섀도우: ${item.shadow.split(' ')[0]}</span>
+          <div>
+            <h4 class="card-title">${item.title}</h4>
+            <div class="card-items">
+              <span class="item-badge">립: ${item.lip}</span>
+              <span class="item-badge">블러셔: ${item.blusher}</span>
+              <span class="item-badge">섀도우: ${item.shadow}</span>
+            </div>
           </div>
           <div class="card-bottom">
-            <span class="card-price">${item.priceFormatted}</span>
-            <button type="button" class="btn-detail" data-id="${item.id}">
-              ${isSaved ? '♥ 저장됨' : '상세보기'}
-            </button>
+            <span class="card-price">${item.price.toLocaleString()}원</span>
+            <button type="button" class="btn-detail" onclick="openModal(${item.id})">상세보기</button>
           </div>
         </div>
-      </article>
+      </div>
     `;
-  }).join('');
+    })
+    .join("");
 }
 
-// -------------------------------------------------------------
-// 이벤트 리스너 설정 (버튼 클릭 동작들)
-// -------------------------------------------------------------
+// 상세보기 모달 열기
+window.openModal = function (id) {
+  const item = mockProducts.find((p) => p.id === id);
+  if (!item) return;
 
-// ① 상단 네비게이션 탭 버튼 클릭 (조합 목록 / 마이 파우치)
-DOM.btnNavList.addEventListener('click', () => {
-  currentTab = 'list';
-  DOM.btnNavList.classList.add('active');
-  DOM.btnNavPouch.classList.remove('active');
-  renderCardList();
-});
+  const isPouch = pouchList.includes(item.id);
+  const modalBody = document.getElementById("modalBody");
 
-DOM.btnNavPouch.addEventListener('click', () => {
-  currentTab = 'pouch';
-  DOM.btnNavPouch.classList.add('active');
-  DOM.btnNavList.classList.remove('active');
-  renderCardList();
-});
-
-// ② 세부 톤 필터 버튼 클릭 (봄라이트, 여름뮤트 등)
-DOM.toneChipList.addEventListener('click', (e) => {
-  if (e.target.classList.contains('chip')) {
-    // 모든 톤 칩 버튼 활성화 해제 후 클릭한 것만 활성화
-    const toneChips = DOM.toneChipList.querySelectorAll('.chip');
-    toneChips.forEach(chip => chip.classList.remove('active'));
-    e.target.classList.add('active');
-
-    selectedTone = e.target.getAttribute('data-tone');
-    renderCardList();
-  }
-});
-
-// ③ 무드 필터 버튼 클릭
-DOM.moodChipList.addEventListener('click', (e) => {
-  if (e.target.classList.contains('chip')) {
-    const moodChips = DOM.moodChipList.querySelectorAll('.chip');
-    
-    if (e.target.classList.contains('active')) {
-      e.target.classList.remove('active');
-      selectedMood = 'all';
-    } else {
-      moodChips.forEach(chip => chip.classList.remove('active'));
-      e.target.classList.add('active');
-      selectedMood = e.target.getAttribute('data-mood');
-    }
-    renderCardList();
-  }
-});
-
-// ④ 검색 기능
-DOM.searchBtn.addEventListener('click', () => {
-  searchKeyword = DOM.searchInput.value;
-  renderCardList();
-});
-
-DOM.searchInput.addEventListener('keyup', (e) => {
-  if (e.key === 'Enter') {
-    searchKeyword = DOM.searchInput.value;
-    renderCardList();
-  }
-});
-
-// ⑤ 필터 초기화 버튼 클릭 (결과 없음 상태에서)
-DOM.resetFilterBtn.addEventListener('click', () => {
-  selectedTone = 'all';
-  selectedMood = 'all';
-  searchKeyword = '';
-  DOM.searchInput.value = '';
-
-  // 칩 버튼 활성화 상태 리셋
-  const toneChips = DOM.toneChipList.querySelectorAll('.chip');
-  toneChips.forEach(chip => chip.classList.remove('active'));
-  DOM.toneChipList.querySelector('[data-tone="all"]').classList.add('active');
-
-  const moodChips = DOM.moodChipList.querySelectorAll('.chip');
-  moodChips.forEach(chip => chip.classList.remove('active'));
-
-  renderCardList();
-});
-
-// ⑥ 카드 상세보기 모달 열기
-DOM.cardList.addEventListener('click', (e) => {
-  if (e.target.classList.contains('btn-detail')) {
-    const cardId = Number(e.target.getAttribute('data-id'));
-    const itemData = mockData.find(item => item.id === cardId);
-
-    if (itemData) {
-      currentSelectedCardId = itemData.id;
-      DOM.modalTone.textContent = itemData.detailTone;
-      DOM.modalTitle.textContent = itemData.title;
-      DOM.modalTags.textContent = itemData.tags;
-      DOM.modalLip.textContent = itemData.lip;
-      DOM.modalBlusher.textContent = itemData.blusher;
-      DOM.modalShadow.textContent = itemData.shadow;
-      DOM.modalPrice.textContent = itemData.priceFormatted;
-
-      // 파우치 저장 상태에 따라 버튼 텍스트 변경
-      if (savedPouchIds.includes(itemData.id)) {
-        DOM.savePouchBtn.textContent = '♥ 나만의 파우치에서 삭제';
-      } else {
-        DOM.savePouchBtn.textContent = '♥ 나만의 파우치에 저장';
-      }
-
-      DOM.detailModal.classList.remove('is-hidden');
-    }
-  }
-});
-
-// ⑦ 모달 닫기
-DOM.modalCloseBtn.addEventListener('click', () => {
-  DOM.detailModal.classList.add('is-hidden');
-});
-
-// ⑧ 나만의 파우치 저장/삭제 토글 버튼
-DOM.savePouchBtn.addEventListener('click', () => {
-  if (!currentSelectedCardId) return;
-
-  if (savedPouchIds.includes(currentSelectedCardId)) {
-    // 이미 저장되어 있으면 삭제
-    savedPouchIds = savedPouchIds.filter(id => id !== currentSelectedCardId);
-    alert('나만의 파우치에서 삭제되었습니다.');
-  } else {
-    // 저장 안 되어 있으면 추가
-    savedPouchIds.push(currentSelectedCardId);
-    alert('나만의 파우치에 저장되었습니다!');
-  }
-
-  // LocalStorage 저장
-  localStorage.setItem('savedPouchIds', JSON.stringify(savedPouchIds));
-  
-  DOM.detailModal.classList.add('is-hidden');
-  renderCardList(); // 화면 업데이트
-});
-
-// 처음 화면 진입 시 카드 목록 표시
-renderCardList();
+  modalBody.innerHTML = `
+    <div style="text-align: center; margin-bottom: 15px;">
+      <div style="width: 100%; height: 120px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 12px;">
+        ${item.tone}
+      </div>
+      <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 6px;">${item.title}</h3>
+      <p style="font-size: 12px; color: #666; margin-bottom: 10px;">${item.desc}</p>
+      <div style="font-size: 13px; text-align: left; background: #f9f9f9; padding:
