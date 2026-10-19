@@ -6,7 +6,7 @@ const toneMap = {
   "겨울": ["겨울 브라이트", "겨울 트루", "겨울 딥"]
 };
 
-// 12톤별 추천 데이터베이스
+// 12톤별 화장품 추천 데이터
 const toneProducts = {
   "봄 라이트": { title: "봄 라이트 피치 속광 세트", lip: "AA 글로우 립", blusher: "BB 피치 파우더", shadow: "CC 코랄 팔레트", price: "38,000원" },
   "봄 트루": { title: "봄 트루 비비드 코랄 세트", lip: "트루 코랄 틴트", blusher: "웜 코랄 블러셔", shadow: "오렌지 섀도우 팔레트", price: "41,000원" },
@@ -22,28 +22,28 @@ const toneProducts = {
   "겨울 딥": { title: "겨울 딥 다크 버건디 세트", lip: "다크 버건디 립", blusher: "딥 버건디", shadow: "딥 스모키 팔레트", price: "48,000원" }
 };
 
-let currentSelectedTone = "봄 라이트"; // 현재 선택된 세부 톤 변수
+let currentSelectedTone = "봄 라이트";
 
 document.addEventListener("DOMContentLoaded", () => {
-  initLogoEvent();
-  initSeasonEvents();
-  initSubtoneEvents();
-  initNavEvents();
+  initLogo();
+  initSeasonGroup();
+  initSubtoneGroup();
+  initNav();
   
-  // 초기 실행 시 '봄' 계절과 첫 번째 세부 톤(봄 라이트) 표시
+  // 첫 화면 렌더링
   renderSubtones("봄");
 });
 
-// 1. Palette 로고 클릭 시 홈 이동
-function initLogoEvent() {
+// 1. 브랜드 로고 클릭 이벤트 (홈으로 이동)
+function initLogo() {
   const logoBtn = document.getElementById("logoBtn");
   if (logoBtn) {
-    logoBtn.addEventListener("click", () => switchTab("home"));
+    logoBtn.onclick = () => switchTab("home");
   }
 }
 
-// 2. 사계절(봄/여름/가을/겨울) 클릭 이벤트
-function initSeasonEvents() {
+// 2. 계절(봄/여름/가을/겨울) 클릭
+function initSeasonGroup() {
   const seasonGroup = document.getElementById("seasonGroup");
   if (!seasonGroup) return;
 
@@ -59,8 +59,8 @@ function initSeasonEvents() {
   });
 }
 
-// 3. 세부 톤 버튼 클릭 이벤트 (실시간 문구 업데이트)
-function initSubtoneEvents() {
+// 3. 세부 톤 클릭 이벤트
+function initSubtoneGroup() {
   const subtoneGroup = document.getElementById("subtoneGroup");
   if (!subtoneGroup) return;
 
@@ -71,36 +71,35 @@ function initSubtoneEvents() {
     subtoneGroup.querySelectorAll(".subtone-btn").forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
 
-    // 클릭한 버튼의 톤 이름으로 업데이트
     currentSelectedTone = btn.innerText.trim();
-    updateSelectedStatus();
+    updateStatusText();
   });
 }
 
-// 4. 세부 톤 버튼 동적 생성
+// 4. 세부 톤 동적 그려주기
 function renderSubtones(season) {
   const subtoneGroup = document.getElementById("subtoneGroup");
   if (!subtoneGroup) return;
 
   const tones = toneMap[season] || toneMap["봄"];
-  currentSelectedTone = tones[0]; // 계절 선택 시 첫 번째 세부 톤 자동 선택
+  currentSelectedTone = tones[0]; // 해당 계절의 첫 번째 톤을 기본 선택
 
   subtoneGroup.innerHTML = tones
     .map((tone, idx) => `<button type="button" class="subtone-btn ${idx === 0 ? "active" : ""}">${tone}</button>`)
     .join("");
 
-  updateSelectedStatus();
+  updateStatusText();
 }
 
-// 5. 선택 상태 문구 실시간 표시
-function updateSelectedStatus() {
+// 5. 선택 상태 문구 업데이트
+function updateStatusText() {
   const statusText = document.getElementById("selectedStatusText");
   if (statusText) {
     statusText.innerText = `${currentSelectedTone} 톤 선택됨.`;
   }
 }
 
-// 6. 조합 목록 탭 추천 카드로 표시
+// 6. 조합 목록 탭 추천 세트 출력
 function renderRecommendation() {
   const titleEl = document.getElementById("currentSelectedToneTitle");
   const cardListEl = document.getElementById("cardList");
@@ -123,14 +122,14 @@ function renderRecommendation() {
         </div>
       `;
     } else {
-      cardListEl.innerHTML = `<div class="card"><p style="font-size: 13px; color: #666;">해당 톤에 연결된 추천 조합이 없습니다.</p></div>`;
+      cardListEl.innerHTML = `<div class="card"><p style="font-size: 13px; color: #666;">추천 세트를 준비 중입니다.</p></div>`;
     }
   }
 }
 
-// 7. 상단 및 하단 탭 버튼 클릭
-function initNavEvents() {
-  const navTargets = [
+// 7. 상단/하단 네비게이션 클릭
+function initNav() {
+  const navs = [
     { id: "btnNavHome", tab: "home" },
     { id: "btnNavList", tab: "list" },
     { id: "btnNavPouch", tab: "pouch" },
@@ -139,15 +138,13 @@ function initNavEvents() {
     { id: "bNavPouch", tab: "pouch" }
   ];
 
-  navTargets.forEach(({ id, tab }) => {
+  navs.forEach(({ id, tab }) => {
     const el = document.getElementById(id);
-    if (el) {
-      el.addEventListener("click", () => switchTab(tab));
-    }
+    if (el) el.onclick = () => switchTab(tab);
   });
 }
 
-// 8. 탭 스위칭 및 화면 제어
+// 8. 탭 전환 처리
 function switchTab(tab) {
   const updateActive = (id, targetTab) => {
     const el = document.getElementById(id);
@@ -173,7 +170,7 @@ function switchTab(tab) {
     if (pcSection) pcSection.classList.add("hidden");
     if (resultSection) resultSection.classList.remove("hidden");
     if (placeholderSection) placeholderSection.classList.add("hidden");
-    renderRecommendation(); // 조합 목록 탭 진입 시 선택된 톤에 맞춘 결과 카드 출력
+    renderRecommendation(); // 조합 목록 탭 클릭 시 현재 선택한 톤 상품 출력!
   } else {
     if (pcSection) pcSection.classList.add("hidden");
     if (resultSection) resultSection.classList.add("hidden");
