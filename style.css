@@ -296,10 +296,13 @@ body {
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+}
+
+.modal-overlay:not(.hidden) {
+  display: flex;
 }
 
 .modal-content {
@@ -317,6 +320,9 @@ body {
   right: 14px;
   background: none;
   border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
   font-size: 22px;
   cursor: pointer;
 }
