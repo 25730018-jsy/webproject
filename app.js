@@ -1,4 +1,4 @@
-// 12톤 매핑 정보
+// 12톤 매핑 데이터
 const toneMap = {
   "봄": ["봄 라이트", "봄 트루", "봄 브라이트"],
   "여름": ["여름 라이트", "여름 트루", "여름 소프트"],
@@ -6,7 +6,7 @@ const toneMap = {
   "겨울": ["겨울 브라이트", "겨울 트루", "겨울 딥"]
 };
 
-// 12톤별 추천 화장품 세트 샘플 데이터
+// 12톤별 추천 데이터베이스
 const toneProducts = {
   "봄 라이트": { title: "봄 라이트 피치 속광 세트", lip: "AA 글로우 립", blusher: "BB 피치 파우더", shadow: "CC 코랄 팔레트", price: "38,000원" },
   "봄 트루": { title: "봄 트루 비비드 코랄 세트", lip: "트루 코랄 틴트", blusher: "웜 코랄 블러셔", shadow: "오렌지 섀도우 팔레트", price: "41,000원" },
@@ -22,17 +22,19 @@ const toneProducts = {
   "겨울 딥": { title: "겨울 딥 다크 버건디 세트", lip: "다크 버건디 립", blusher: "딥 버건디", shadow: "딥 스모키 팔레트", price: "48,000원" }
 };
 
-let currentSelectedTone = "봄 라이트";
+let currentSelectedTone = "봄 라이트"; // 현재 선택된 세부 톤 변수
 
 document.addEventListener("DOMContentLoaded", () => {
   initLogoEvent();
   initSeasonEvents();
   initSubtoneEvents();
   initNavEvents();
-  renderSubtones("봄"); // 초기 세부톤 설정
+  
+  // 초기 실행 시 '봄' 계절과 첫 번째 세부 톤(봄 라이트) 표시
+  renderSubtones("봄");
 });
 
-// 0. 로고 클릭 이벤트 (홈으로 이동)
+// 1. Palette 로고 클릭 시 홈 이동
 function initLogoEvent() {
   const logoBtn = document.getElementById("logoBtn");
   if (logoBtn) {
@@ -40,7 +42,7 @@ function initLogoEvent() {
   }
 }
 
-// 1. 계절 버튼 클릭
+// 2. 사계절(봄/여름/가을/겨울) 클릭 이벤트
 function initSeasonEvents() {
   const seasonGroup = document.getElementById("seasonGroup");
   if (!seasonGroup) return;
@@ -57,7 +59,7 @@ function initSeasonEvents() {
   });
 }
 
-// 2. 세부 톤 버튼 클릭
+// 3. 세부 톤 버튼 클릭 이벤트 (실시간 문구 업데이트)
 function initSubtoneEvents() {
   const subtoneGroup = document.getElementById("subtoneGroup");
   if (!subtoneGroup) return;
@@ -69,18 +71,19 @@ function initSubtoneEvents() {
     subtoneGroup.querySelectorAll(".subtone-btn").forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
 
+    // 클릭한 버튼의 톤 이름으로 업데이트
     currentSelectedTone = btn.innerText.trim();
     updateSelectedStatus();
   });
 }
 
-// 3. 세부 톤 버튼 동적 생성
+// 4. 세부 톤 버튼 동적 생성
 function renderSubtones(season) {
   const subtoneGroup = document.getElementById("subtoneGroup");
   if (!subtoneGroup) return;
 
   const tones = toneMap[season] || toneMap["봄"];
-  currentSelectedTone = tones[0]; // 계절 바뀔 때 첫 세부톤 기본 선택
+  currentSelectedTone = tones[0]; // 계절 선택 시 첫 번째 세부 톤 자동 선택
 
   subtoneGroup.innerHTML = tones
     .map((tone, idx) => `<button type="button" class="subtone-btn ${idx === 0 ? "active" : ""}">${tone}</button>`)
@@ -89,7 +92,7 @@ function renderSubtones(season) {
   updateSelectedStatus();
 }
 
-// 4. 선택 상태 문구 업데이트
+// 5. 선택 상태 문구 실시간 표시
 function updateSelectedStatus() {
   const statusText = document.getElementById("selectedStatusText");
   if (statusText) {
@@ -97,31 +100,35 @@ function updateSelectedStatus() {
   }
 }
 
-// 5. 추천 화장품 조합 카드로 표시
+// 6. 조합 목록 탭 추천 카드로 표시
 function renderRecommendation() {
   const titleEl = document.getElementById("currentSelectedToneTitle");
   const cardListEl = document.getElementById("cardList");
 
   if (titleEl) titleEl.innerText = currentSelectedTone;
 
-  const item = toneProducts[currentSelectedTone] || toneProducts["봄 라이트"];
+  const item = toneProducts[currentSelectedTone];
 
   if (cardListEl) {
-    cardListEl.innerHTML = `
-      <div class="card">
-        <div class="card-title">${item.title}</div>
-        <div class="card-items">
-          <span class="item-badge">립: ${item.lip}</span>
-          <span class="item-badge">블러셔: ${item.blusher}</span>
-          <span class="item-badge">섀도우: ${item.shadow}</span>
+    if (item) {
+      cardListEl.innerHTML = `
+        <div class="card">
+          <div class="card-title">${item.title}</div>
+          <div class="card-items">
+            <span class="item-badge">립: ${item.lip}</span>
+            <span class="item-badge">블러셔: ${item.blusher}</span>
+            <span class="item-badge">섀도우: ${item.shadow}</span>
+          </div>
+          <div class="card-price">${item.price}</div>
         </div>
-        <div class="card-price">${item.price}</div>
-      </div>
-    `;
+      `;
+    } else {
+      cardListEl.innerHTML = `<div class="card"><p style="font-size: 13px; color: #666;">해당 톤에 연결된 추천 조합이 없습니다.</p></div>`;
+    }
   }
 }
 
-// 6. 상단/하단 탭 버튼 클릭
+// 7. 상단 및 하단 탭 버튼 클릭
 function initNavEvents() {
   const navTargets = [
     { id: "btnNavHome", tab: "home" },
@@ -140,7 +147,7 @@ function initNavEvents() {
   });
 }
 
-// 7. 탭 전환 처리
+// 8. 탭 스위칭 및 화면 제어
 function switchTab(tab) {
   const updateActive = (id, targetTab) => {
     const el = document.getElementById(id);
@@ -166,7 +173,7 @@ function switchTab(tab) {
     if (pcSection) pcSection.classList.add("hidden");
     if (resultSection) resultSection.classList.remove("hidden");
     if (placeholderSection) placeholderSection.classList.add("hidden");
-    renderRecommendation(); // 조합 목록 누를 때 추천 데이터 그리기
+    renderRecommendation(); // 조합 목록 탭 진입 시 선택된 톤에 맞춘 결과 카드 출력
   } else {
     if (pcSection) pcSection.classList.add("hidden");
     if (resultSection) resultSection.classList.add("hidden");
