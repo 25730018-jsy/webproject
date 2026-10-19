@@ -1,72 +1,67 @@
 // 12톤 매핑 정보
-var toneMap = {
+const toneMap = {
   "봄": ["봄 라이트", "봄 트루", "봄 브라이트"],
   "여름": ["여름 라이트", "여름 트루", "여름 소프트"],
   "가을": ["가을 소프트", "가을 트루", "가을 딥"],
   "겨울": ["겨울 브라이트", "겨울 트루", "겨울 딥"]
 };
 
-// 페이지 로드 시 및 안전장치
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initApp);
-} else {
-  initApp();
-}
+// DOM 로드 완료 후 실행
+document.addEventListener("DOMContentLoaded", () => {
+  initSeasonEvents();
+  initSubtoneEvents();
+  initNavEvents();
+  renderSubtones("봄"); // 초기 실행
+});
 
-function initApp() {
-  bindSeasonEvents();
-  bindNavEvents();
-  renderSubtones("봄"); // 초기 실행 시 '봄' 세부 톤 출력
-}
+// 1. 계절 버튼 클릭 이벤트 (이벤트 위임 방식 적용)
+function initSeasonEvents() {
+  const seasonGroup = document.getElementById("seasonGroup");
+  if (!seasonGroup) return;
 
-// 계절 버튼 (봄, 여름, 가을, 겨울) 클릭 이벤트
-function bindSeasonEvents() {
-  var seasonBtns = document.querySelectorAll(".season-btn, [data-season]");
-  
-  seasonBtns.forEach(function (btn) {
-    btn.onclick = function (e) {
-      seasonBtns.forEach(function (b) {
-        b.classList.remove("active");
-      });
-      btn.classList.add("active");
+  seasonGroup.addEventListener("click", (e) => {
+    const btn = e.target.closest(".season-btn");
+    if (!btn) return;
 
-      // 버튼의 data-season 값 또는 내부 텍스트("봄", "여름" 등) 추출
-      var seasonText = btn.getAttribute("data-season") || btn.innerText.trim();
-      renderSubtones(seasonText);
-    };
+    // 활성화 상태 변경
+    seasonGroup.querySelectorAll(".season-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    // 계절 이름 추출 후 세부 톤 렌더링
+    const season = btn.getAttribute("data-season") || btn.innerText.trim();
+    renderSubtones(season);
   });
 }
 
-// 계절에 해당하는 세부 3톤 버튼 동적 생성
-function renderSubtones(season) {
-  var subtoneGroup = document.getElementById("subtoneGroup");
+// 2. 세부 톤 버튼 클릭 이벤트 (이벤트 위임 방식 적용)
+function initSubtoneEvents() {
+  const subtoneGroup = document.getElementById("subtoneGroup");
   if (!subtoneGroup) return;
 
-  var tones = toneMap[season] || toneMap["봄"];
-  var html = "";
+  subtoneGroup.addEventListener("click", (e) => {
+    const btn = e.target.closest(".subtone-btn");
+    if (!btn) return;
 
-  for (var i = 0; i < tones.length; i++) {
-    var activeClass = (i === 0) ? "active" : "";
-    html += '<button type="button" class="subtone-btn ' + activeClass + '">' + tones[i] + '</button>';
-  }
-
-  subtoneGroup.innerHTML = html;
-
-  // 생성된 세부 톤 버튼 클릭 이벤트
-  var subtoneBtns = subtoneGroup.querySelectorAll(".subtone-btn");
-  subtoneBtns.forEach(function (btn) {
-    btn.onclick = function () {
-      subtoneBtns.forEach(function (b) {
-        b.classList.remove("active");
-      });
-      btn.classList.add("active");
-    };
+    subtoneGroup.querySelectorAll(".subtone-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
   });
 }
 
-// 상단/하단 탭 전환 이벤트
-function bindNavEvents() {
-  var tabPairs = [
+// 3. 세부 톤 버튼 동적 생성
+function renderSubtones(season) {
+  const subtoneGroup = document.getElementById("subtoneGroup");
+  if (!subtoneGroup) return;
+
+  const tones = toneMap[season] || toneMap["봄"];
+  
+  subtoneGroup.innerHTML = tones
+    .map((tone, idx) => `<button type="button" class="subtone-btn ${idx === 0 ? "active" : ""}">${tone}</button>`)
+    .join("");
+}
+
+// 4. 상단 및 하단 탭 버튼 클릭 이벤트
+function initNavEvents() {
+  const navTargets = [
     { id: "btnNavHome", tab: "home" },
     { id: "btnNavList", tab: "list" },
     { id: "btnNavPouch", tab: "pouch" },
@@ -75,20 +70,18 @@ function bindNavEvents() {
     { id: "bNavPouch", tab: "pouch" }
   ];
 
-  tabPairs.forEach(function (item) {
-    var el = document.getElementById(item.id);
+  navTargets.forEach(({ id, tab }) => {
+    const el = document.getElementById(id);
     if (el) {
-      el.onclick = function () {
-        switchTab(item.tab);
-      };
+      el.addEventListener("click", () => switchTab(tab));
     }
   });
 }
 
-// 탭 스위칭 logic
+// 5. 탭 전환 처리
 function switchTab(tab) {
-  var updateActive = function (id, targetTab) {
-    var el = document.getElementById(id);
+  const updateActive = (id, targetTab) => {
+    const el = document.getElementById(id);
     if (el) el.classList.toggle("active", tab === targetTab);
   };
 
@@ -99,8 +92,8 @@ function switchTab(tab) {
   updateActive("bNavList", "list");
   updateActive("bNavPouch", "pouch");
 
-  var pcSection = document.getElementById("personalColorSection");
-  var placeholderSection = document.getElementById("placeholderSection");
+  const pcSection = document.getElementById("personalColorSection");
+  const placeholderSection = document.getElementById("placeholderSection");
 
   if (tab === "home") {
     if (pcSection) pcSection.classList.remove("hidden");
