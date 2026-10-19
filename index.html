@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Palette - 퍼스널 컬러 메이크업 조합 탐색</title>
   <link rel="stylesheet" href="style.css">
-  <!-- defer 속성을 추가하여 HTML 요소가 완전히 로드된 후 JS가 실행되도록 보장 -->
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -15,7 +14,8 @@
 
     <!-- Header -->
     <header class="header">
-      <h1 class="logo">Palette</h1>
+      <!-- 로고 클릭 시 홈 이동 -->
+      <h1 class="logo" id="logoBtn" style="cursor: pointer;">Palette</h1>
       <nav class="nav">
         <button type="button" class="nav-btn active" id="btnNavHome">홈</button>
         <button type="button" class="nav-btn" id="btnNavList">조합 목록</button>
@@ -44,13 +44,28 @@
         <!-- 2단계: 세부 3톤 선택 -->
         <div class="subtone-title">세부 톤 선택</div>
         <div class="subtone-group" id="subtoneGroup">
-          <!-- JS에서 계절 선택에 따라 동적으로 생성됩니다 -->
+          <!-- JS 동적 생성 -->
+        </div>
+
+        <!-- 선택 상태 메시지 -->
+        <div class="selected-status" id="selectedStatusText">
+          봄 라이트 톤 선택됨.
         </div>
       </section>
 
-      <!-- 준비중 안내 영역 (조합 목록 / 마이 파우치 클릭 시) -->
+      <!-- 조합 목록 섹션 (조합 목록 탭 전용) -->
+      <section class="result-section hidden" id="resultSection">
+        <div class="result-header">
+          <span class="result-count"><strong id="currentSelectedToneTitle">봄 라이트</strong> 추천 조합</span>
+        </div>
+        <div class="card-list" id="cardList">
+          <!-- JS 동적 생성 -->
+        </div>
+      </section>
+
+      <!-- 마이 파우치 전용 안내 영역 -->
       <section class="placeholder-section hidden" id="placeholderSection">
-        <p>준비 중인 기능입니다.</p>
+        <p>마이 파우치 기능 준비 중입니다.</p>
       </section>
 
     </main>
