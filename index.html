@@ -42,28 +42,13 @@
         <!-- 2단계: 세부 3톤 선택 -->
         <div class="subtone-title">세부 톤 선택</div>
         <div class="subtone-group" id="subtoneGroup">
-          <!-- JS에서 계절 선택에 따라 동적으로 생성됩니다 -->
+          <!-- JS에서 계절 선택에 따라 세부 톤 버튼이 들어갑니다 -->
         </div>
       </section>
 
-      <!-- 결과 섹션 (조합 목록 / 마이 파우치 전용) -->
-      <section class="result-section" id="resultSection">
-        <div class="result-header">
-          <span class="result-count">조합 결과 <strong id="resultCountNum">0</strong>건</span>
-          <select id="sortSelect">
-            <option value="popular">인기순</option>
-            <option value="latest">최신순</option>
-            <option value="priceLow">낮은가격순</option>
-          </select>
-        </div>
-
-        <div class="card-list" id="cardList"></div>
-
-        <div class="empty-state hidden" id="emptyState">
-          <p class="empty-title">선택하신 조건에 맞는 세트가 없습니다.</p>
-          <p class="empty-sub">다른 필터를 해제하고 다시 확인해 보세요.</p>
-          <button type="button" id="btnResetFilter">전체 목록 보기</button>
-        </div>
+      <!-- 준비중 안내 영역 (조합 목록 / 마이 파우치 클릭 시) -->
+      <section class="placeholder-section hidden" id="placeholderSection">
+        <p>준비 중인 기능입니다.</p>
       </section>
 
     </main>
@@ -84,14 +69,6 @@
       </button>
     </nav>
 
-  </div>
-
-  <!-- 모달 -->
-  <div class="modal-overlay hidden" id="detailModal">
-    <div class="modal-content">
-      <button type="button" class="modal-close" id="btnCloseModal">&times;</button>
-      <div class="modal-body" id="modalBody"></div>
-    </div>
   </div>
 
   <script src="app.js"></script>
