@@ -1,99 +1,108 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Palette - 퍼스널 컬러 메이크업 조합 탐색</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+// 12톤 매핑 정보
+const toneMap = {
+  봄: ["봄 라이트", "봄 트루", "봄 브라이트"],
+  여름: ["여름 라이트", "여름 트루", "여름 소프트"],
+  가을: ["가을 소프트", "가을 트루", "가을 딥"],
+  겨울: ["겨울 브라이트", "겨울 트루", "겨울 딥"]
+};
 
-  <!-- App Container -->
-  <div id="app">
+let currentTab = "home";
+let selectedSeason = "봄";
+let selectedSubtone = "봄 라이트";
 
-    <!-- Header -->
-    <header class="header">
-      <h1 class="logo">Palette</h1>
-      <nav class="nav">
-        <button type="button" class="nav-btn active" id="btnNavHome">홈</button>
-        <button type="button" class="nav-btn" id="btnNavList">조합 목록</button>
-        <button type="button" class="nav-btn" id="btnNavPouch">마이 파우치</button>
-      </nav>
-    </header>
+document.addEventListener("DOMContentLoaded", () => {
+  initApp();
+});
 
-    <!-- Main Content -->
-    <main class="content">
+function initApp() {
+  bindNavEvents();
+  bindSeasonEvents();
+  renderSubtones("봄");
+  switchTab("home");
+}
 
-      <!-- 퍼스널컬러 선택 섹션 (홈 탭 전용) -->
-      <section class="personal-color-section" id="personalColorSection">
-        <div class="pc-header">
-          <h2>퍼스널컬러 진단 · 12톤 팔레트</h2>
-          <p>나에게 딱 맞는 톤을 선택하고 조합을 확인하세요</p>
-        </div>
+// 탭 버튼 클릭 연결
+function bindNavEvents() {
+  const navIds = [
+    { home: "btnNavHome", list: "btnNavList", pouch: "btnNavPouch" },
+    { home: "bNavHome", list: "bNavList", pouch: "bNavPouch" }
+  ];
 
-        <!-- 1단계: 4계절 선택 -->
-        <div class="season-group" id="seasonGroup">
-          <button type="button" class="season-btn active" data-season="봄">봄</button>
-          <button type="button" class="season-btn" data-season="여름">여름</button>
-          <button type="button" class="season-btn" data-season="가을">가을</button>
-          <button type="button" class="season-btn" data-season="겨울">겨울</button>
-        </div>
+  navIds.forEach((group) => {
+    document.getElementById(group.home)?.addEventListener("click", () => switchTab("home"));
+    document.getElementById(group.list)?.addEventListener("click", () => switchTab("list"));
+    document.getElementById(group.pouch)?.addEventListener("click", () => switchTab("pouch"));
+  });
+}
 
-        <!-- 2단계: 세부 3톤 선택 -->
-        <div class="subtone-title">세부 톤 선택</div>
-        <div class="subtone-group" id="subtoneGroup">
-          <!-- JS에서 동적 생성 -->
-        </div>
-      </section>
+// 계절 버튼 클릭 이벤트 연동 (봄, 여름, 가을, 겨울)
+function bindSeasonEvents() {
+  const seasonBtns = document.querySelectorAll("#seasonGroup .season-btn");
 
-      <!-- 결과 섹션 (기본 숨김) -->
-      <section class="result-section hidden" id="resultSection">
-        <div class="result-header">
-          <span class="result-count">조합 결과 <strong id="resultCountNum">0</strong>건</span>
-          <select id="sortSelect">
-            <option value="popular">인기순</option>
-            <option value="latest">최신순</option>
-            <option value="priceLow">낮은가격순</option>
-          </select>
-        </div>
+  seasonBtns.forEach((btn) => {
+    btn.onclick = (e) => {
+      seasonBtns.forEach((b) => b.classList.remove("active"));
+      e.currentTarget.classList.add("active");
 
-        <div class="card-list" id="cardList"></div>
+      selectedSeason = e.currentTarget.getAttribute("data-season");
+      renderSubtones(selectedSeason);
+    };
+  });
+}
 
-        <div class="empty-state hidden" id="emptyState">
-          <p class="empty-title">선택하신 조건에 맞는 세트가 없습니다.</p>
-          <p class="empty-sub">다른 필터를 해제하고 다시 확인해 보세요.</p>
-          <button type="button" id="btnResetFilter">전체 목록 보기</button>
-        </div>
-      </section>
+// 선택된 계절의 세부 3톤 버튼 동적 출력
+function renderSubtones(season) {
+  const subtoneGroup = document.getElementById("subtoneGroup");
+  if (!subtoneGroup) return;
 
-    </main>
+  const subTones = toneMap[season] || [];
+  selectedSubtone = subTones[0] || "";
 
-    <!-- 하단 고정 네비게이션 -->
-    <nav class="bottom-nav">
-      <button type="button" class="bottom-nav-btn active" id="bNavHome">
-        <span class="b-icon">🏠</span>
-        <span>홈</span>
+  subtoneGroup.innerHTML = subTones
+    .map(
+      (tone, idx) => `
+      <button type="button" class="subtone-btn ${idx === 0 ? "active" : ""}" data-tone="${tone}">
+        ${tone}
       </button>
-      <button type="button" class="bottom-nav-btn" id="bNavList">
-        <span class="b-icon">💄</span>
-        <span>조합 목록</span>
-      </button>
-      <button type="button" class="bottom-nav-btn" id="bNavPouch">
-        <span class="b-icon">👝</span>
-        <span>마이 파우치</span>
-      </button>
-    </nav>
+    `
+    )
+    .join("");
 
-  </div>
+  // 세부 톤 버튼 클릭 이벤트
+  const subtoneBtns = subtoneGroup.querySelectorAll(".subtone-btn");
+  subtoneBtns.forEach((btn) => {
+    btn.onclick = (e) => {
+      subtoneBtns.forEach((b) => b.classList.remove("active"));
+      e.currentTarget.classList.add("active");
+      selectedSubtone = e.currentTarget.getAttribute("data-tone");
+    };
+  });
+}
 
-  <!-- 모달 -->
-  <div class="modal-overlay hidden" id="detailModal">
-    <div class="modal-content">
-      <button type="button" class="modal-close" id="btnCloseModal">&times;</button>
-      <div class="modal-body" id="modalBody"></div>
-    </div>
-  </div>
+// 탭 스위칭 logic
+function switchTab(tab) {
+  currentTab = tab;
 
-  <script src="app.js"></script>
-</body>
-</html>
+  const updateActive = (id, targetTab) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle("active", tab === targetTab);
+  };
+
+  updateActive("btnNavHome", "home");
+  updateActive("btnNavList", "list");
+  updateActive("btnNavPouch", "pouch");
+  updateActive("bNavHome", "home");
+  updateActive("bNavList", "list");
+  updateActive("bNavPouch", "pouch");
+
+  const pcSection = document.getElementById("personalColorSection");
+  const placeholderSection = document.getElementById("placeholderSection");
+
+  if (currentTab === "home") {
+    if (pcSection) pcSection.classList.remove("hidden");
+    if (placeholderSection) placeholderSection.classList.add("hidden");
+  } else {
+    if (pcSection) pcSection.classList.add("hidden");
+    if (placeholderSection) placeholderSection.classList.remove("hidden");
+  }
+}
