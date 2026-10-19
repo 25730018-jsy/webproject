@@ -11,7 +11,6 @@ const mockProducts = [
     shadow: "ZZ 뮤트 4색 팔레트",
     popular: 3,
     date: "2024-03-01",
-    detailImg: "여름뮤트",
     desc: "쿨톤 여름뮤트 착붙 조합! 차분하고 감성적인 모브 음영 메이크업 연출 가능."
   },
   {
@@ -25,7 +24,6 @@ const mockProducts = [
     shadow: "CC 코랄 팔레트",
     popular: 1,
     date: "2024-03-05",
-    detailImg: "봄라이트",
     desc: "봄라이트 전용 화사한 피치 톤 조합으로 투명하고 맑은 속광 메이크업을 완벽 완성합니다."
   },
   {
@@ -39,192 +37,189 @@ const mockProducts = [
     shadow: "FF 글리터 팔레트",
     popular: 2,
     date: "2024-03-02",
-    detailImg: "가을딥",
     desc: "가을딥 톤을 위한 딥한 브릭 컬러와 화려한 글로우 포인트가 살아있는 세트입니다."
   }
 ];
 
-// 상태 관리
-let currentTab = "home"; // home, list, pouch
+// 글로벌 변수
+let currentTab = "home";
 let selectedTone = "all";
 let selectedMood = null;
 let searchQuery = "";
 let currentSort = "popular";
 let pouchList = JSON.parse(localStorage.getItem("palettePouch")) || [];
 
-// DOM 요소
-document.addEventListener("DOMContentLoaded", () => {
+// 실행 초기화
+window.addEventListener("DOMContentLoaded", () => {
   initEvents();
   render();
 });
 
-// 이벤트 리스너 등록
+// 이벤트 등록
 function initEvents() {
-  // 상단 네비게이션 탭 버튼
-  document.getElementById("btnNavHome").addEventListener("click", () => switchTab("home"));
-  document.getElementById("btnNavList").addEventListener("click", () => switchTab("list"));
-  document.getElementById("btnNavPouch").addEventListener("click", () => switchTab("pouch"));
+  // 상단 네비게이션
+  const btnHome = document.getElementById("btnNavHome");
+  const btnList = document.getElementById("btnNavList");
+  const btnPouch = document.getElementById("btnNavPouch");
 
-  // 하단 고정 네비게이션 탭 버튼
-  document.getElementById("bNavHome").addEventListener("click", () => switchTab("home"));
-  document.getElementById("bNavList").addEventListener("click", () => switchTab("list"));
-  document.getElementById("bNavPouch").addEventListener("click", () => switchTab("pouch"));
+  if (btnHome) btnHome.onclick = () => switchTab("home");
+  if (btnList) btnList.onclick = () => switchTab("list");
+  if (btnPouch) btnPouch.onclick = () => switchTab("pouch");
+
+  // 하단 네비게이션
+  const bHome = document.getElementById("bNavHome");
+  const bList = document.getElementById("bNavList");
+  const bPouch = document.getElementById("bNavPouch");
+
+  if (bHome) bHome.onclick = () => switchTab("home");
+  if (bList) bList.onclick = () => switchTab("list");
+  if (bPouch) bPouch.onclick = () => switchTab("pouch");
 
   // 검색
-  document.getElementById("btnSearch").addEventListener("click", handleSearch);
-  document.getElementById("searchInput").addEventListener("keyup", (e) => {
-    if (e.key === "Enter") handleSearch();
-  });
+  const btnSearch = document.getElementById("btnSearch");
+  const searchInput = document.getElementById("searchInput");
+  if (btnSearch) btnSearch.onclick = handleSearch;
+  if (searchInput) {
+    searchInput.onkeyup = (e) => {
+      if (e.key === "Enter") handleSearch();
+    };
+  }
 
   // 톤 필터
-  const toneBtns = document.querySelectorAll("#toneFilterGroup .tag-btn");
-  toneBtns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      toneBtns.forEach((b) => b.classList.remove("active"));
+  document.querySelectorAll("#toneFilterGroup .tag-btn").forEach((btn) => {
+    btn.onclick = (e) => {
+      document.querySelectorAll("#toneFilterGroup .tag-btn").forEach((b) => b.classList.remove("active"));
       e.target.classList.add("active");
       selectedTone = e.target.getAttribute("data-filter-val");
       render();
-    });
+    };
   });
 
-  // 무드 필터 (토글 방식)
-  const moodBtns = document.querySelectorAll("#moodFilterGroup .tag-btn");
-  moodBtns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
+  // 무드 필터
+  document.querySelectorAll("#moodFilterGroup .tag-btn").forEach((btn) => {
+    btn.onclick = (e) => {
       const val = e.target.getAttribute("data-filter-val");
       if (selectedMood === val) {
         selectedMood = null;
         e.target.classList.remove("active");
       } else {
-        moodBtns.forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll("#moodFilterGroup .tag-btn").forEach((b) => b.classList.remove("active"));
         e.target.classList.add("active");
         selectedMood = val;
       }
       render();
-    });
+    };
   });
 
   // 정렬
-  document.getElementById("sortSelect").addEventListener("change", (e) => {
-    currentSort = e.target.value;
-    render();
-  });
+  const sortSelect = document.getElementById("sortSelect");
+  if (sortSelect) {
+    sortSelect.onchange = (e) => {
+      currentSort = e.target.value;
+      render();
+    };
+  }
 
   // 필터 초기화
-  document.getElementById("btnResetFilter").addEventListener("click", resetFilters);
+  const btnReset = document.getElementById("btnResetFilter");
+  if (btnReset) btnReset.onclick = resetFilters;
 
   // 모달 닫기
-  document.getElementById("btnCloseModal").addEventListener("click", closeModal);
-  document.getElementById("detailModal").addEventListener("click", (e) => {
-    if (e.target.id === "detailModal") closeModal();
-  });
+  const btnClose = document.getElementById("btnCloseModal");
+  if (btnClose) btnClose.onclick = closeModal;
 }
 
-// 탭 전환
 function switchTab(tab) {
   currentTab = tab;
+  
+  const navMap = {
+    home: ["btnNavHome", "bNavHome"],
+    list: ["btnNavList", "bNavList"],
+    pouch: ["btnNavPouch", "bNavPouch"]
+  };
 
-  // 상단 및 하단 버튼 활성화 상태 변경
-  const topBtns = { home: "btnNavHome", list: "btnNavList", pouch: "btnNavPouch" };
-  const bottomBtns = { home: "bNavHome", list: "bNavList", pouch: "bNavPouch" };
-
-  ["home", "list", "pouch"].forEach((t) => {
-    document.getElementById(topBtns[t]).classList.toggle("active", t === tab);
-    document.getElementById(bottomBtns[t]).classList.toggle("active", t === tab);
+  Object.keys(navMap).forEach((t) => {
+    const isTarget = t === tab;
+    navMap[t].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle("active", isTarget);
+    });
   });
 
   render();
 }
 
-// 검색 처리
 function handleSearch() {
-  searchQuery = document.getElementById("searchInput").value.trim();
+  const input = document.getElementById("searchInput");
+  if (input) searchQuery = input.value.trim();
   render();
 }
 
-// 필터 초기화
 function resetFilters() {
   selectedTone = "all";
   selectedMood = null;
   searchQuery = "";
-  document.getElementById("searchInput").value = "";
+  
+  const input = document.getElementById("searchInput");
+  if (input) input.value = "";
 
-  // UI 리셋
-  const toneBtns = document.querySelectorAll("#toneFilterGroup .tag-btn");
-  toneBtns.forEach((b) => {
+  document.querySelectorAll("#toneFilterGroup .tag-btn").forEach((b) => {
     b.classList.toggle("active", b.getAttribute("data-filter-val") === "all");
   });
-
-  const moodBtns = document.querySelectorAll("#moodFilterGroup .tag-btn");
-  moodBtns.forEach((b) => b.classList.remove("active"));
+  document.querySelectorAll("#moodFilterGroup .tag-btn").forEach((b) => b.classList.remove("active"));
 
   render();
 }
 
-// 필터링 및 정렬 데이터 가져오기
 function getFilteredData() {
   let list = [...mockProducts];
 
-  // 마이파우치 탭일 때
   if (currentTab === "pouch") {
     list = list.filter((item) => pouchList.includes(item.id));
   }
-
-  // 톤 필터
   if (selectedTone !== "all") {
     list = list.filter((item) => item.tone === selectedTone);
   }
-
-  // 무드 필터
   if (selectedMood) {
     list = list.filter((item) => item.mood === selectedMood);
   }
-
-  // 검색어 필터
   if (searchQuery) {
     list = list.filter(
       (item) =>
         item.title.includes(searchQuery) ||
         item.tone.includes(searchQuery) ||
-        item.lip.includes(searchQuery) ||
-        item.blusher.includes(searchQuery) ||
-        item.shadow.includes(searchQuery)
+        item.lip.includes(searchQuery)
     );
   }
 
-  // 정렬
-  if (currentSort === "popular") {
-    list.sort((a, b) => a.popular - b.popular);
-  } else if (currentSort === "latest") {
-    list.sort((a, b) => new Date(b.date) - new Date(a.date));
-  } else if (currentSort === "priceLow") {
-    list.sort((a, b) => a.price - b.price);
-  }
+  if (currentSort === "popular") list.sort((a, b) => a.popular - b.popular);
+  else if (currentSort === "latest") list.sort((a, b) => new Date(b.date) - new Date(a.date));
+  else if (currentSort === "priceLow") list.sort((a, b) => a.price - b.price);
 
   return list;
 }
 
-// 화면 렌더링
 function render() {
   const cardListEl = document.getElementById("cardList");
   const emptyStateEl = document.getElementById("emptyState");
   const resultCountNum = document.getElementById("resultCountNum");
 
+  if (!cardListEl) return;
+
   const data = getFilteredData();
-  resultCountNum.textContent = data.length;
+  if (resultCountNum) resultCountNum.textContent = data.length;
 
   if (data.length === 0) {
     cardListEl.innerHTML = "";
-    emptyStateEl.classList.remove("hidden");
+    if (emptyStateEl) emptyStateEl.classList.remove("hidden");
     return;
   }
 
-  emptyStateEl.classList.add("hidden");
+  if (emptyStateEl) emptyStateEl.classList.add("hidden");
 
   cardListEl.innerHTML = data
-    .map((item) => {
-      const isPouch = pouchList.includes(item.id);
-      return `
+    .map(
+      (item) => `
       <div class="card">
         <div class="card-img-placeholder">${item.tone}</div>
         <div class="card-info">
@@ -242,12 +237,11 @@ function render() {
           </div>
         </div>
       </div>
-    `;
-    })
+    `
+    )
     .join("");
 }
 
-// 상세보기 모달 열기
 window.openModal = function (id) {
   const item = mockProducts.find((p) => p.id === id);
   if (!item) return;
@@ -255,11 +249,45 @@ window.openModal = function (id) {
   const isPouch = pouchList.includes(item.id);
   const modalBody = document.getElementById("modalBody");
 
-  modalBody.innerHTML = `
-    <div style="text-align: center; margin-bottom: 15px;">
-      <div style="width: 100%; height: 120px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 12px;">
-        ${item.tone}
+  if (modalBody) {
+    modalBody.innerHTML = `
+      <div style="text-align: center; margin-bottom: 15px;">
+        <div style="width: 100%; height: 100px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 12px;">
+          ${item.tone}
+        </div>
+        <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 6px;">${item.title}</h3>
+        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">${item.desc}</p>
+        <p style="font-size: 15px; font-weight: bold; margin-bottom: 15px;">${item.price.toLocaleString()}원</p>
+        <button type="button" id="btnTogglePouch" style="width: 100%; padding: 10px; background-color: ${isPouch ? "#555" : "#1a1a1a"}; color: #fff; border: none; font-weight: bold; cursor: pointer;">
+          ${isPouch ? "마이 파우치에서 삭제" : "마이 파우치에 저장"}
+        </button>
       </div>
-      <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 6px;">${item.title}</h3>
-      <p style="font-size: 12px; color: #666; margin-bottom: 10px;">${item.desc}</p>
-      <div style="font-size: 13px; text-align: left; background: #f9f9f9; padding:
+    `;
+
+    const btnPouch = document.getElementById("btnTogglePouch");
+    if (btnPouch) {
+      btnPouch.onclick = () => {
+        togglePouch(item.id);
+        closeModal();
+      };
+    }
+  }
+
+  const modal = document.getElementById("detailModal");
+  if (modal) modal.classList.remove("hidden");
+};
+
+function closeModal() {
+  const modal = document.getElementById("detailModal");
+  if (modal) modal.classList.add("hidden");
+}
+
+function togglePouch(id) {
+  if (pouchList.includes(id)) {
+    pouchList = pouchList.filter((pId) => pId !== id);
+  } else {
+    pouchList.push(id);
+  }
+  localStorage.setItem("palettePouch", JSON.stringify(pouchList));
+  render();
+}
