@@ -56,7 +56,7 @@ body {
   border-color: #1a1a1a;
 }
 
-/* Personal Color Section (12톤 선택 영역) */
+/* Personal Color Section */
 .personal-color-section {
   margin-bottom: 24px;
   background-color: #fafafa;
@@ -78,7 +78,7 @@ body {
   margin-bottom: 14px;
 }
 
-/* 사계절 4개 메인 버튼 */
+/* 계절 선택 버튼 */
 .season-group {
   display: flex;
   gap: 6px;
@@ -111,7 +111,7 @@ body {
   margin-bottom: 8px;
 }
 
-/* 세부 3톤 버튼 그룹 */
+/* 세부 톤 버튼 그룹 */
 .subtone-group {
   display: flex;
   flex-direction: column;
@@ -128,159 +128,28 @@ body {
   cursor: pointer;
   border-radius: 6px;
   transition: all 0.2s;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.subtone-btn::after {
-  content: '→';
-  font-size: 12px;
-  color: #aaa;
 }
 
 .subtone-btn.active {
-  background-color: #1a1a1a;
+  background-color: #333333;
   color: #ffffff;
-  border-color: #1a1a1a;
+  border-color: #333333;
   font-weight: bold;
 }
 
-.subtone-btn.active::after {
-  color: #ffffff;
-}
-
-/* Result Section */
-.result-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eeeeee;
-}
-
-.result-count {
-  font-size: 13px;
-}
-
-.result-header select {
-  padding: 4px 8px;
-  font-size: 12px;
-  border: 1px solid #cccccc;
-}
-
-/* Card List */
-.card-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.card {
-  border: 1px solid #e0e0e0;
-  padding: 12px;
-  display: flex;
-  gap: 12px;
-  background-color: #ffffff;
-  border-radius: 6px;
-}
-
-.card-img-placeholder {
-  width: 90px;
-  height: 90px;
-  background-color: #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: bold;
-  flex-shrink: 0;
-  border-radius: 4px;
-}
-
-.card-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.card-title {
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 6px;
-  line-height: 1.2;
-}
-
-.card-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 8px;
-}
-
-.item-badge {
-  background-color: #f2f2f2;
-  padding: 2px 6px;
-  font-size: 11px;
-  color: #444444;
-  border-radius: 3px;
-}
-
-.card-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.card-price {
-  font-size: 15px;
-  font-weight: bold;
-}
-
-.btn-detail {
-  padding: 4px 10px;
-  border: 1px solid #cccccc;
-  background-color: #ffffff;
-  font-size: 12px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-/* Empty State */
-.empty-state {
+/* Placeholder */
+.placeholder-section {
   text-align: center;
-  padding: 40px 10px;
-}
-
-.empty-title {
+  padding: 60px 0;
+  color: #888;
   font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-.empty-sub {
-  font-size: 12px;
-  color: #777777;
-  margin-bottom: 16px;
-}
-
-.empty-state button {
-  padding: 8px 16px;
-  border: 1px solid #1a1a1a;
-  background-color: #ffffff;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 4px;
 }
 
 .hidden {
   display: none !important;
 }
 
-/* Bottom Navigation Bar */
+/* Bottom Nav */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -319,41 +188,4 @@ body {
 .bottom-nav-btn.active {
   color: #1a1a1a;
   font-weight: bold;
-}
-
-/* Modal Popup */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-overlay:not(.hidden) {
-  display: flex;
-}
-
-.modal-content {
-  width: 90%;
-  max-width: 360px;
-  background-color: #ffffff;
-  padding: 20px;
-  position: relative;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-}
-
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  background: none;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
 }
