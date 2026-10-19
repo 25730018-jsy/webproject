@@ -56,69 +56,74 @@ body {
   border-color: #1a1a1a;
 }
 
-/* Search */
-.search-section {
-  margin-bottom: 20px;
+/* Personal Color Section (12톤 선택 영역) */
+.personal-color-section {
+  margin-bottom: 24px;
+  background-color: #fafafa;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #eeeeee;
 }
 
-.search-bar {
-  display: flex;
-  gap: 6px;
-}
-
-.search-bar input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #cccccc;
-  font-size: 13px;
-  outline: none;
-}
-
-.search-bar button {
-  padding: 10px 16px;
-  background-color: #1a1a1a;
-  color: #ffffff;
-  border: none;
-  font-size: 13px;
+.pc-header h2 {
+  font-size: 16px;
   font-weight: bold;
-  cursor: pointer;
+  color: #1a1a1a;
+  margin-bottom: 4px;
 }
 
-/* Filter Section */
-.filter-section {
-  margin-bottom: 20px;
-}
-
-.filter-group {
+.pc-header p {
+  font-size: 12px;
+  color: #777777;
   margin-bottom: 14px;
 }
 
-.filter-group h3 {
-  font-size: 13px;
-  color: #666666;
-  margin-bottom: 8px;
-  font-weight: bold;
+/* 사계절 4개 메인 버튼 */
+.season-group {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
-.tag-group {
+.season-btn {
+  flex: 1;
+  padding: 10px 0;
+  border: 1px solid #dddddd;
+  background-color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.season-btn.active {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border-color: #1a1a1a;
+}
+
+/* 세부 3톤 버튼 서브 그룹 */
+.subtone-group {
   display: flex;
-  flex-wrap: wrap;
   gap: 6px;
 }
 
-.tag-btn {
-  padding: 6px 10px;
+.subtone-btn {
+  flex: 1;
+  padding: 8px 0;
   border: 1px solid #e0e0e0;
   background-color: #ffffff;
   font-size: 12px;
   cursor: pointer;
+  border-radius: 4px;
   transition: all 0.2s;
 }
 
-.tag-btn.active {
-  background-color: #1a1a1a;
+.subtone-btn.active {
+  background-color: #333333;
   color: #ffffff;
-  border-color: #1a1a1a;
+  border-color: #333333;
   font-weight: bold;
 }
 
@@ -155,18 +160,20 @@ body {
   display: flex;
   gap: 12px;
   background-color: #ffffff;
+  border-radius: 6px;
 }
 
 .card-img-placeholder {
   width: 90px;
   height: 90px;
-  background-color: #e0e0e0;
+  background-color: #f0f0f0;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
   font-weight: bold;
   flex-shrink: 0;
+  border-radius: 4px;
 }
 
 .card-info {
@@ -177,7 +184,7 @@ body {
 }
 
 .card-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: bold;
   margin-bottom: 6px;
   line-height: 1.2;
@@ -195,6 +202,7 @@ body {
   padding: 2px 6px;
   font-size: 11px;
   color: #444444;
+  border-radius: 3px;
 }
 
 .card-bottom {
@@ -214,6 +222,7 @@ body {
   background-color: #ffffff;
   font-size: 12px;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 /* Empty State */
@@ -241,6 +250,7 @@ body {
   font-size: 12px;
   font-weight: bold;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 .hidden {
@@ -312,6 +322,7 @@ body {
   padding: 20px;
   position: relative;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
 }
 
 .modal-close {
@@ -320,9 +331,6 @@ body {
   right: 14px;
   background: none;
   border: none;
-  font-size: 22px;
-  cursor: pointer;
-}
   font-size: 22px;
   cursor: pointer;
 }
