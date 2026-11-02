@@ -29,9 +29,15 @@ document.addEventListener("DOMContentLoaded", () => {
   initSeasonGroup();
   initSubtoneGroup();
   initNav();
-  
-  // 첫 화면 렌더링
-  renderSubtones("봄");
+
+  fetch('./data.json')
+        .then(response => response.json())
+        .then(data => {
+            console.log("300개 데이터 로드 완료:", data);
+            renderSubtones("봄");
+        })
+        .catch(error => console.error("데이터 로딩 에러:", error));
+
 });
 
 // 1. 브랜드 로고 클릭 이벤트 (홈으로 이동)
