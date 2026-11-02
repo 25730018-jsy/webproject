@@ -6,6 +6,22 @@ const toneMap = {
   "겨울": ["겨울 브라이트", "겨울 트루", "겨울 딥"]
 };
 
+// 한글 톤 이름 ➔ data.json 영문 tone 매핑 표
+const toneEnglishMap = {
+  "봄 라이트": "Light Spring",
+  "봄 트루": "Warm Spring",
+  "봄 브라이트": "Bright Spring",
+  "여름 라이트": "Light Summer",
+  "여름 트루": "Cool Summer",
+  "여름 소프트": "Soft Summer",
+  "가을 소프트": "Soft Autumn",
+  "가을 트루": "Warm Autumn",
+  "가을 딥": "Dark Autumn",
+  "겨울 브라이트": "Bright Winter",
+  "겨울 트루": "Cool Winter",
+  "겨울 딥": "Dark Winter"
+};
+
 // JSON에서 불러올 300개 전체 데이터 배열
 let allProducts = [];
 
@@ -21,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   fetch('./data.json')
     .then(response => response.json())
     .then(data => {
-      allProducts = data; // 300개 데이터 전역 변수에 저장
+      allProducts = data; // 300개 데이터 저장
       console.log("300개 데이터 로드 완료:", allProducts);
       renderSubtones("봄");
     })
@@ -93,31 +109,37 @@ function updateStatusText() {
   }
 }
 
-// 6. 조합 목록 탭 추천 세트 출력 (300개 데이터 필터링 출력)
+// 6. 조합 목록 탭 추천 세트 출력 (한글 톤 -> 영문 톤 매핑 후 300개 데이터 필터링)
 function renderRecommendation() {
   const titleEl = document.getElementById("currentSelectedToneTitle");
   const cardListEl = document.getElementById("cardList");
 
   if (titleEl) titleEl.innerText = currentSelectedTone;
 
-  // 선택한 톤(tone)과 일치하는 화장품들 필터링
-  const matchedItems = allProducts.filter(item => item.tone === currentSelectedTone);
+  // 한글 톤 이름을 영문 톤 이름으로 변환 (예: "봄 라이트" -> "Light Spring")
+  const targetEnglishTone = toneEnglishMap[currentSelectedTone] || currentSelectedTone;
+
+  // 변환된 영문 톤과 일치하는 화장품 필터링
+  const matchedItems = allProducts.filter(item => item.tone === targetEnglishTone);
 
   if (cardListEl) {
     if (matchedItems.length > 0) {
       cardListEl.innerHTML = matchedItems.map(item => `
-        <div class="card" style="margin-bottom: 15px; padding: 15px; border: 1px solid #eee; border-radius: 8px;">
-          <div class="card-title" style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">${item.title}</div>
-          <div class="card-items" style="margin-bottom: 8px;">
-            <span class="item-badge" style="background: #f0f0f0; padding: 3px 6px; border-radius: 4px; font-size: 12px; margin-right: 4px;">립: ${item.lip}</span>
-            <span class="item-badge" style="background: #f0f0f0; padding: 3px 6px; border-radius: 4px; font-size: 12px; margin-right: 4px;">블러셔: ${item.blusher}</span>
-            <span class="item-badge" style="background: #f0f0f0; padding: 3px 6px; border-radius: 4px; font-size: 12px;">섀도우: ${item.shadow}</span>
+        <div class="card" style="margin-bottom: 15px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #fff;">
+          <div class="card-title" style="font-weight: bold; font-size: 15px; margin-bottom: 8px; color: #333;">${item.title}</div>
+          <div class="card-items" style="margin-bottom: 8px; display: flex; gap: 4px; flex-wrap: wrap;">
+            <span class="item-badge" style="background: #f4f4f4; padding: 4px 8px; border-radius: 4px; font-size: 12px; color: #555;">립: ${item.lip}</span>
+            <span class="item-badge" style="background: #f4f4f4; padding: 4px 8px; border-radius: 4px; font-size: 12px; color: #555;">블러셔: ${item.blusher}</span>
+            <span class="item-badge" style="background: #f4f4f4; padding: 4px 8px; border-radius: 4px; font-size: 12px; color: #555;">섀도우: ${item.shadow}</span>
           </div>
-          <div class="card-price" style="font-weight: bold; color: #e91e63;">${item.price.toLocaleString()}원</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+            <span style="font-size: 11px; padding: 2px 6px; border-radius: 3px; background: ${item.isMockData ? '#e3f2fd' : '#e8f5e9'}; color: ${item.isMockData ? '#1976d2' : '#388e3c'}; font-weight: bold;">${item.apiStatus}</span>
+            <span class="card-price" style="font-weight: bold; color: #e91e63; font-size: 14px;">${item.price.toLocaleString()}원</span>
+          </div>
         </div>
       `).join("");
     } else {
-      cardListEl.innerHTML = `<div class="card"><p style="font-size: 13px; color: #666;">해당 톤에 맞는 추천 제품 데이터를 찾는 중입니다...</p></div>`;
+      cardListEl.innerHTML = `<div class="card" style="padding: 15px;"><p style="font-size: 13px; color: #666;">추천 데이터를 불러오는 중입니다...</p></div>`;
     }
   }
 }
